@@ -13,7 +13,7 @@ class Complaint(models.Model):
         ("R", "Resolved"),
         ("U", "UnOpened"),
     ]
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="complaints")
     title = models.CharField(max_length=200)
     description = models.CharField()
     status = models.CharField(max_length=1, choices=COMPLAINT_STATUS)
