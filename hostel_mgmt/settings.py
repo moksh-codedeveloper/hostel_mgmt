@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = "students.User"
 
 # Application definition
+LOGIN_URL = "/user/login/"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
