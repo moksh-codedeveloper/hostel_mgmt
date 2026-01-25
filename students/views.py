@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import User, Student
@@ -55,6 +55,7 @@ def user_login(request):
         "message": "Login successful",
         "next": "/dashboard"
     })
+
 @csrf_exempt
 @login_required
 def register_user(request):
@@ -77,3 +78,40 @@ def register_user(request):
         "message": "Student registered successfully",
         "next": "/dashboard"
     }, status=201)
+
+@csrf_exempt
+@login_required
+def student_profile(request):
+    if request.method != "GET":
+        return JsonResponse({"message": "Method not allowed"}, status=405)
+
+    if not hasattr(request.user, "student"):
+        return JsonResponse(
+            {"message": "Student profile not found"},
+            status=404
+        )
+
+    student = request.user.student
+
+    data = {
+        "username": request.user.username,
+        "full_name": request.user.full_name,
+        "semester": student.semester,
+        "college": student.college,
+        "gender": student.gender,
+    }
+
+    return JsonResponse(data, status=200)
+
+@csrf_exempt
+@login_required
+def user_logout(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Method not allowed"}, status=405)
+
+    logout(request)
+
+    return JsonResponse({
+        "message": "Logout successful",
+        "next": "/user/login/"
+    })
