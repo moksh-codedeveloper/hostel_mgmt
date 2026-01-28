@@ -85,6 +85,7 @@ def register_user(request):
         })
     
     Student.objects.create(
+        user = request.user,
         email= data["email"],
         semester=data["semester"],
         phone_number = data["phone_number"],
@@ -115,6 +116,8 @@ def student_profile(request):
         "semester": student.semester,
         "college": student.college,
         "gender": student.gender,
+        "email" : student.email,
+        "phone_number" : student.phone_number
     }
 
     return JsonResponse(data, status=200)
@@ -131,6 +134,7 @@ def user_logout(request):
         "message": "Logout successful",
         "next": "/user/login/"
     })
+
 @csrf_exempt
 @login_required
 def update_student(request):
@@ -143,7 +147,7 @@ def update_student(request):
             {"message": "Student profile not found"},
             status=404
         )
-    data = json.load(request.body)
+    data = json.loads(request.body)
     user_form = UserUpdateForm(data, instance=request.user)
     student_form = StudentUpdateForm(data, instance=request.user.student)
     if not student_form.is_valid() or not user_form.is_valid():
