@@ -138,7 +138,7 @@ def user_logout(request):
 @csrf_exempt
 @login_required
 def update_student(request):
-    if request.method != "POST":
+    if request.method != "PUT":
         return JsonResponse({
             "message" : "Method not supported"
         })
