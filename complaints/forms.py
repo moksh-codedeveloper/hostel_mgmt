@@ -10,3 +10,8 @@ class ComplaintForm(forms.ModelForm):
             "status",
             "attention_level"
         ]
+
+class UpdateStatusComplaint(forms.ModelForm):
+    class Meta:
+        model = Complaint
+        fields = ["status"]
