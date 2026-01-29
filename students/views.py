@@ -135,7 +135,6 @@ def user_logout(request):
         "next": "/user/login/"
     })
 
-@csrf_exempt
 @login_required
 def update_student(request):
     if request.method != "PUT":
@@ -148,16 +147,29 @@ def update_student(request):
             status=404
         )
     data = json.loads(request.body)
-    user_form = UserUpdateForm(data, instance=request.user)
     student_form = StudentUpdateForm(data, instance=request.user.student)
-    if not student_form.is_valid() or not user_form.is_valid():
+    if not student_form.is_valid():
         errors = {
             "student_errors": student_form.errors,
-            "user_errors": user_form.errors,
         }
         return JsonResponse(errors, status=400)
     student_form.save()
-    user_form.save()
     return JsonResponse({
         "message" : "Updated Successfully"
     }, status=200)
+
+
+@login_required
+def user_update(request):
+    if request.method != "POST":
+        return JsonResponse({
+            "message" : "This method is not supported"
+        })
+    data = json.loads(request.body)
+    user_form = UserUpdateForm(data, instance=request.user)
+    if not user_form.is_valid():
+        return JsonResponse({
+            "error" : f"This is the error coming from the user form :- {user_form.errors}"
+        }, status=400)
+    user_form.save()
+    return JsonResponse({"message" : "Updated successfully"})
