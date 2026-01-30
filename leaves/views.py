@@ -2,6 +2,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .forms import CreateLeavesForm
+from .models import Leaves
 
 @login_required
 def create_leave(request):
@@ -35,3 +36,40 @@ def create_leave(request):
         {"message": "Leave created successfully"},
         status=201
     )
+
+@login_required
+def get_all_leaves(request):
+    leaves = Leaves.objects.filter(student=request.user.student)
+
+    data = [
+        {
+            "id": leave.id, # type: ignore
+            "reason": leave.reason,
+            "status": leave.leave_status,
+            "from": leave.date_to_leave,
+            "to": leave.date_of_return,
+        }
+        for leave in leaves
+    ]
+
+    return JsonResponse({"leaves": data})
+
+@login_required
+def get_leave_by_id(request, leave_id):
+    try:
+        leave = Leaves.objects.get(
+            id=leave_id,
+            student=request.user.student
+        )
+    except Leaves.DoesNotExist:
+        return JsonResponse(
+            {"message": "Leave not found"},
+            status=404
+        )
+
+    return JsonResponse({
+        "reason": leave.reason,
+        "status": leave.leave_status,
+        "from": leave.date_to_leave,
+        "to": leave.date_of_return,
+    })
