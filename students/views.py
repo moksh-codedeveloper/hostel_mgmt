@@ -122,7 +122,6 @@ def student_profile(request):
 
     return JsonResponse(data, status=200)
 
-@csrf_exempt
 @login_required
 def user_logout(request):
     if request.method != "POST":

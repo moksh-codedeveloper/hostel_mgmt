@@ -7,7 +7,7 @@ class Fees(models.Model):
         ("P", "Paid"),
         ("UP", "Unpaid"),
     ]
-    student = models.OneToOneField(Student, on_delete=models.CASCADE, related_name="fees")
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="fees")
     fees_status = models.CharField(max_length=2, choices=FEES_STATUS)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
