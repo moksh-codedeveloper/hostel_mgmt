@@ -14,6 +14,11 @@ class Leaves(models.Model):
     place_on_leave = models.CharField(max_length=100)
     date_to_leave = models.DateField()
     date_of_return = models.DateField()
-    leave_status = models.CharField(max_length=1, choices=STATUS)
+    leave_status = models.CharField(
+        max_length=1,
+        choices=STATUS,
+        default="P"   # 🔥 THIS WAS MISSING
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
