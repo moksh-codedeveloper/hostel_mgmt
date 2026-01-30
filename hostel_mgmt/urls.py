@@ -23,5 +23,6 @@ urlpatterns = [
     path("get/token/", csrf_token, name="csrf_token"),
     path('admin/', admin.site.urls),
     path('user/', include("students.urls")),
-    path("complaints/", include("complaints.urls"))
+    path("complaints/", include("complaints.urls")),
+    path("leaves/", include("leaves.urls"))
 ]
