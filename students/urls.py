@@ -1,4 +1,4 @@
-from .views import register, student_profile, user_login, register_user, user_logout, update_student, user_update
+from .views import register, student_profile, user_login, register_user, user_logout, update_student, update_user
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
@@ -9,9 +9,9 @@ urlpatterns = [
     path("reset/done/", auth_views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
     path("register/", register, name="register"),
     path("login/", user_login, name="login"),
-    path("student/create/", register_user, name="user_register"),
+    path("student/create/", register_user, name="student_create"),
     path("student/", student_profile, name="student_profile"),
     path("logout/", user_logout, name="user_logout"),
     path("student/update/", update_student, name="student_update"),
-    path("user/update/", user_update, name="user_update")
+    path("user/update/", update_user, name="user_update")
 ]

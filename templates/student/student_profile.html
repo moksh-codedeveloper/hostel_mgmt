@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Student Profile | HMS{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: auto; margin-top: 40px">
+
+    <h2 style="text-align: center;">Student Profile</h2>
+    <hr>
+
+    <h3>👤 Account Information</h3>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+
+    <hr>
+
+    <h3>🎓 Student Information</h3>
+    <p><strong>Phone:</strong> {{ student.phone_number }}</p>
+    <p><strong>Semester:</strong> {{ student.semester }}</p>
+    <p><strong>Gender:</strong> {{ student.gender|title }}</p>
+    <p><strong>College:</strong> {{ student.college }}</p>
+
+    <hr>
+
+    <div style="display: flex; justify-content: space-between;">
+        <a href="{% url 'update_user' %}">
+            <button>Update Account</button>
+        </a>
+
+        <a href="{% url 'update_student' %}">
+            <button>Update Student Info</button>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

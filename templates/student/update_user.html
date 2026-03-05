@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Update Account | HMS{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:500px; margin:auto; margin-top:40px;">
+
+    <h2 style="text-align:center;">Update Account Info</h2>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Username</label>
+        <input type="text" name="username" value="{{ request.user.username }}" required>
+
+        <label>Full Name</label>
+        <input type="text" name="full_name" value="{{ request.user.full_name }}" required>
+
+        <button type="submit" style="width:100%; margin-top:10px;">Update</button>
+    </form>
+
+    {% if error %}
+        <p style="color:red; margin-top:10px;">{{ error }}</p>
+    {% endif %}
+
+</div>
+{% endblock %}

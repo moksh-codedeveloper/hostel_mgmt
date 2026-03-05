@@ -2,173 +2,126 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import User, Student
-import json
-from django.views.decorators.csrf import csrf_exempt
 from .forms import StudentUpdateForm, UserUpdateForm
-@csrf_exempt
+from django.shortcuts import redirect, render, get_object_or_404
+
 def register(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Method not allowed"}, status=405)
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        full_name = request.POST.get("full_name")
 
-    data = json.loads(request.body)
+        if User.objects.filter(username=username).exists():
+            return render(request, "registration/registration.html", {
+                "error": "Username already exists"
+            })
 
-    if User.objects.filter(username=data["username"]).exists():
-        return JsonResponse({"message": "Username already exists"}, status=409)
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            full_name=full_name
+        )
 
-    user = User.objects.create_user(
-        username=data["username"],
-        password=data["password"],
-        full_name=data["full_name"]
-    )
+        login(request, user)
 
-    login(request, user)
+        return redirect("student_create")
 
-    return JsonResponse({
-        "message": "User registered",
-        "next": "/student/create/"
-    }, status=201)
-@csrf_exempt
+    return render(request, "registration/registration.html")
+
 def user_login(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Method not allowed"}, status=405)
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-    data = json.loads(request.body)
+        user = authenticate(request, username=username, password=password)
 
-    user = authenticate(
-        request=request,
-        username=data["username"],
-        password=data["password"]
-    )
+        if not user:
+            return render(request, "registration/login.html", {
+                "error": "Invalid credentials"
+            })
 
-    if not user:
-        return JsonResponse({"message": "Invalid credentials"}, status=403)
+        login(request, user)
 
-    login(request, user)
+        if not hasattr(user, "student"):
+            return redirect("student_create")
 
-    if not hasattr(user, "student"):
-        return JsonResponse({
-            "message": "Profile incomplete",
-            "next": "/student/create/"
-        })
+        return redirect("dashboard")
 
-    return JsonResponse({
-        "message": "Login successful",
-        "next": "/dashboard"
-    })
+    return render(request, "registration/login.html")
 
-@csrf_exempt
 @login_required
 def register_user(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Method not allowed"}, status=405)
 
+    # If student profile already exists
     if hasattr(request.user, "student"):
-        return JsonResponse({"message": "Student already registered"}, status=409)
-    REQUIRED_FIELD = [
-        "gender",
-        "semester", 
-        "email", 
-        "phone_number",
-        "college"
-    ]
-    data = json.loads(request.body)
-    
-    for fields in REQUIRED_FIELD:
-        if fields not in  data:
-            return JsonResponse({
-                "message" : "You do not have enough and required fields in the data passed as the json"
-            })
-    
-    if Student.objects.filter(email=data["email"]).exists():
-        return JsonResponse({
-            "message" : "Do you really think i would not know you buddy you are same as always"
-        })
-    
-    Student.objects.create(
-        user = request.user,
-        email= data["email"],
-        semester=data["semester"],
-        phone_number = data["phone_number"],
-        gender = data["gender"],
-        college = data["college"]
-    )
-    return JsonResponse({
-        "message": "Student registered successfully"
-    }, status=201)
+        return redirect("dashboard")
 
-@csrf_exempt
+    if request.method == "POST":
+        email = request.POST.get("email")
+        semester = request.POST.get("semester")
+        phone_number = request.POST.get("phone_number")
+        gender = request.POST.get("gender")
+        college = request.POST.get("college")
+
+        # Basic required field check
+        if not all([email, semester, phone_number, gender, college]):
+            return render(request, "student/create.html", {
+                "error": "All fields are required."
+            })
+
+        # Email uniqueness check
+        if Student.objects.filter(email=email).exists():
+            return render(request, "student/create.html", {
+                "error": "Email already registered."
+            })
+
+        # Create student profile
+        Student.objects.create(
+            user=request.user,
+            email=email,
+            semester=semester,
+            phone_number=phone_number,
+            gender=gender,
+            college=college
+        )
+
+        return redirect("dashboard")
+
+    return render(request, "student/create.html")
 @login_required
 def student_profile(request):
-    if request.method != "GET":
-        return JsonResponse({"message": "Method not allowed"}, status=405)
-
-    if not hasattr(request.user, "student"):
-        return JsonResponse(
-            {"message": "Student profile not found"},
-            status=404
-        )
-
-    student = request.user.student
-
-    data = {
-        "username": request.user.username,
-        "full_name": request.user.full_name,
-        "semester": student.semester,
-        "college": student.college,
-        "gender": student.gender,
-        "email" : student.email,
-        "phone_number" : student.phone_number
-    }
-
-    return JsonResponse(data, status=200)
-
+    student = get_object_or_404(Student, user=request.user)
+    return render(request, "student/student_profile.html", {
+        "student": student
+    })
 @login_required
 def user_logout(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Method not allowed"}, status=405)
+    if request.method == "POST":
+        logout(request)
+        return redirect("login")
 
-    logout(request)
+    return redirect("dashboard")
+@login_required
+def update_user(request):
+    if request.method == "POST":
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("student_profile")
+    else:
+        form = UserUpdateForm(instance=request.user)
 
-    return JsonResponse({
-        "message": "Logout successful",
-        "next": "/user/login/"
-    })
-
+    return render(request, "student/update_user.html", {"form": form})
 @login_required
 def update_student(request):
-    if request.method != "PUT":
-        return JsonResponse({
-            "message" : "Method not supported"
-        })
-    if not hasattr(request.user, "student"):
-        return JsonResponse(
-            {"message": "Student profile not found"},
-            status=404
-        )
-    data = json.loads(request.body)
-    student_form = StudentUpdateForm(data, instance=request.user.student)
-    if not student_form.is_valid():
-        errors = {
-            "student_errors": student_form.errors,
-        }
-        return JsonResponse(errors, status=400)
-    student_form.save()
-    return JsonResponse({
-        "message" : "Updated Successfully"
-    }, status=200)
+    student = Student.objects.get(user=request.user)
 
+    if request.method == "POST":
+        form = StudentUpdateForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return redirect("student_profile")
+    else:
+        form = StudentUpdateForm(instance=student)
 
-@login_required
-def user_update(request):
-    if request.method != "POST":
-        return JsonResponse({
-            "message" : "This method is not supported"
-        })
-    data = json.loads(request.body)
-    user_form = UserUpdateForm(data, instance=request.user)
-    if not user_form.is_valid():
-        return JsonResponse({
-            "error" : f"This is the error coming from the user form :- {user_form.errors}"
-        }, status=400)
-    user_form.save()
-    return JsonResponse({"message" : "Updated successfully"})
+    return render(request, "student/update_student.html", {"form": form})
