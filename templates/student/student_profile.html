@@ -2,33 +2,43 @@
 {% block title %}Student Profile | HMS{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 700px; margin: auto; margin-top: 40px">
+<div class="card" style="max-width:750px; margin:60px auto;">
 
-    <h2 style="text-align: center;">Student Profile</h2>
-    <hr>
-
-    <h3>👤 Account Information</h3>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
+    <h2 style="text-align:center;">Student Profile</h2>
+    <p style="text-align:center; color:var(--muted); margin-bottom:20px;">
+        Your account and student details
+    </p>
 
     <hr>
 
-    <h3>🎓 Student Information</h3>
-    <p><strong>Phone:</strong> {{ student.phone_number }}</p>
-    <p><strong>Semester:</strong> {{ student.semester }}</p>
-    <p><strong>Gender:</strong> {{ student.gender|title }}</p>
-    <p><strong>College:</strong> {{ student.college }}</p>
+    <div style="margin-bottom:20px;">
+        <h3 style="margin-bottom:10px;">👤 Account Information</h3>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
 
     <hr>
 
-    <div style="display: flex; justify-content: space-between;">
-        <a href="{% url 'update_user' %}">
-            <button>Update Account</button>
+    <div style="margin-bottom:20px;">
+        <h3 style="margin-bottom:10px;">🎓 Student Information</h3>
+        <p><strong>Phone:</strong> {{ student.phone_number }}</p>
+        <p><strong>Semester:</strong> {{ student.semester }}</p>
+        <p><strong>Gender:</strong> {{ student.gender|title }}</p>
+        <p><strong>College:</strong> {{ student.college }}</p>
+    </div>
+
+    <hr>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between;">
+
+        <a href="{% url 'update_user' %}" style="flex:1;">
+            <button style="width:100%;">Update Account</button>
         </a>
 
-        <a href="{% url 'update_student' %}">
-            <button>Update Student Info</button>
+        <a href="{% url 'update_student' %}" style="flex:1;">
+            <button style="width:100%;">Update Student Info</button>
         </a>
+
     </div>
 
 </div>

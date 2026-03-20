@@ -1,8 +1,14 @@
 from django.urls import path
-from .views import create_complain, delete_complaint, list_complaints, update_status
+from . import views
+
 urlpatterns = [
-    path("create/", create_complain, name="create_complaints"),
-    path("update/", update_status,name="update_status"),
-    path("delete/<complaint_id>/", delete_complaint,name="delete_complaint"),
-    path("list/", list_complaints, name="list_complaints")
+    # Pages
+    path("", views.complaints_page, name="complaints_page"),
+    path("create/", views.create_complaint_page, name="create_complaint_page"),
+
+    # APIs
+    path("list/", views.list_complaints, name="list_complaints"),
+    path("create-api/", views.create_complain, name="create_complaint_api"),
+    path("update/", views.update_status, name="update_complaint"),
+    path("delete/<int:complaint_id>/", views.delete_complaint, name="delete_complaint"),
 ]

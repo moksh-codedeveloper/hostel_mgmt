@@ -1,123 +1,214 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Hostel Management System{% endblock %}</title>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{% block title %}Hostel Management System{% endblock %}</title>
 
-    <!-- Simple modern styling -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f6f9;
-        }
+		<style>
+			:root {
+				--primary: #2563eb;
+				--primary-dark: #1d4ed8;
+				--bg: #f4f6f9;
+				--text: #1f2937;
+				--muted: #6b7280;
+				--card: #ffffff;
+				--border: #e5e7eb;
+			}
 
-        header {
-            background-color: #1f2937;
-            color: white;
-            padding: 15px 30px;
-        }
+			* {
+				box-sizing: border-box;
+			}
 
-        header h1 {
-            margin: 0;
-        }
+			body {
+				margin: 0;
+				font-family: "Segoe UI", Tahoma, sans-serif;
+				background-color: var(--bg);
+				color: var(--text);
+			}
 
-        nav {
-            background-color: #374151;
-            padding: 10px 30px;
-        }
+			/* HEADER */
+			header {
+				background: linear-gradient(90deg, #1f2937, #111827);
+				color: white;
+				padding: 18px 30px;
+				font-size: 20px;
+				font-weight: 600;
+				letter-spacing: 0.5px;
+			}
 
-        nav a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-size: 14px;
-        }
+			/* NAVBAR */
+			nav {
+				background-color: #111827;
+				padding: 12px 30px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
 
-        nav a:hover {
-            text-decoration: underline;
-        }
+			.nav-left a {
+				color: #d1d5db;
+				margin-right: 18px;
+				text-decoration: none;
+				font-size: 14px;
+				transition: 0.2s;
+			}
 
-        main {
-            padding: 30px;
-            min-height: 80vh;
-        }
+			.nav-left a:hover {
+				color: white;
+			}
 
-        footer {
-            background-color: #e5e7eb;
-            padding: 10px 30px;
-            font-size: 14px;
-        }
+			.nav-right {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				color: #d1d5db;
+				font-size: 14px;
+			}
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
+			.nav-right form {
+				margin: 0;
+			}
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+			/* MAIN */
+			main {
+				padding: 30px 20px;
+				min-height: 80vh;
+			}
 
-        button {
-            padding: 8px 14px;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+			.container {
+				max-width: 1000px;
+				margin: auto;
+			}
 
-        button:hover {
-            background-color: #1d4ed8;
-        }
+			/* CARD */
+			.card {
+				background: var(--card);
+				padding: 22px;
+				border-radius: 10px;
+				border: 1px solid var(--border);
+				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+			}
 
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body>
+			/* BUTTON */
+			button {
+				padding: 8px 14px;
+				background-color: var(--primary);
+				color: white;
+				border: none;
+				border-radius: 6px;
+				cursor: pointer;
+				transition: 0.2s;
+			}
 
-<header>
-    <h1>Hostel Management System</h1>
-</header>
+			button:hover {
+				background-color: var(--primary-dark);
+			}
 
-{% if user.is_authenticated %}
-<nav>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    <a href="{% url 'student_profile' %}">Profile</a>
-    <a href="{% url 'complaints_list' %}">Complaints</a>
-    <a href="{% url 'leave_list' %}">Leaves</a>
-    <a href="{% url 'fees_list' %}">Fees</a>
+			/* INPUTS */
+			input,
+			select,
+			textarea {
+				width: 100%;
+				padding: 10px;
+				margin-bottom: 12px;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				font-size: 14px;
+			}
 
-    <span style="float:right;">
-        {{ user.username }} |
-        <form method="POST" action="{% url 'user_logout' %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
-    </span>
-</nav>
-{% endif %}
+			input:focus,
+			textarea:focus {
+				outline: none;
+				border-color: var(--primary);
+			}
 
-<main>
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-</main>
+			/* TABLE */
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 10px;
+			}
 
-<footer>
-    <p>© HMS</p>
-</footer>
+			table th,
+			table td {
+				padding: 10px;
+				border-bottom: 1px solid var(--border);
+				text-align: left;
+			}
 
-</body>
+			table th {
+				background-color: #f9fafb;
+				font-weight: 600;
+			}
+
+			/* ALERT */
+			.alert {
+				padding: 10px;
+				background-color: #fee2e2;
+				color: #991b1b;
+				border-radius: 6px;
+				margin-bottom: 10px;
+			}
+
+			/* FOOTER */
+			footer {
+				background-color: #e5e7eb;
+				padding: 12px 30px;
+				font-size: 14px;
+				text-align: center;
+				color: var(--muted);
+			}
+
+			/* RESPONSIVE */
+			@media (max-width: 768px) {
+				nav {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 10px;
+				}
+
+				.nav-left a {
+					display: inline-block;
+					margin-bottom: 5px;
+				}
+			}
+			select {
+				padding: 5px;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>Hostel Management System</header>
+
+		{% if user.is_authenticated %}
+		<nav>
+			<div class="nav-left">
+				<a href="{% url 'home' %}">Dashboard</a>
+				<a href="{% url 'student_profile' %}">Profile</a>
+				<a href="{% url 'list_complaints' %}">Complaints</a>
+				<a href="/leaves/all/">Leaves</a>
+				<a href="/fees/history/">Fees</a>
+			</div>
+
+			<div class="nav-right">
+				<span>{{ user.username }}</span>
+
+				<form method="POST" action="{% url 'user_logout' %}">
+					{% csrf_token %}
+					<button type="submit">Logout</button>
+				</form>
+			</div>
+		</nav>
+		{% endif %}
+
+		<main>
+			<div class="container">{% block content %}{% endblock %}</div>
+		</main>
+
+		<footer>© Hostel Management System</footer>
+	</body>
 </html>

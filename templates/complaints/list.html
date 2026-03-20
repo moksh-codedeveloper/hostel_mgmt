@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Complaints | HMS{% endblock %}
+
+{% block content %}
+<div class="card" style="margin:40px auto;">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h2 style="margin-bottom:5px;">Complaints</h2>
+            <p style="color:var(--muted);">View and manage your complaints</p>
+        </div>
+
+        <a href="/complaints/create/">
+            <button>+ New Complaint</button>
+        </a>
+    </div>
+
+    <hr>
+
+    <!-- CSRF TOKEN (important for JS requests) -->
+    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+
+    <!-- Table -->
+    <table id="complaintsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+
+<script>
+const csrfToken = document.getElementById("csrfToken").value;
+
+// 🚀 Load complaints on page load
+loadComplaints();
+
+function loadComplaints() {
+    fetch("/complaints/list/")
+    .then(res => res.json())
+    .then(data => {
+        const table = document.querySelector("#complaintsTable tbody");
+        table.innerHTML = "";
+
+        data.complaints.forEach(c => {
+            table.innerHTML += `
+                <tr>
+                    <td>${c.id}</td>
+                    <td>${c.title}</td>
+
+                    <td>
+                        <select onchange="updateStatus(${c.id}, this.value)">
+                            <option value="U" ${c.status==="U"?"selected":""}>🕓 Pending</option>
+                            <option value="P" ${c.status==="P"?"selected":""}>🔧 In Progress</option>
+                            <option value="R" ${c.status==="R"?"selected":""}>✅ Resolved</option>
+                        </select>
+                    </td>
+
+                    <td>${formatPriority(c.attention_level)}</td>
+
+                    <td>
+                        <button onclick="deleteComplaint(${c.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+// 🔄 Update Status
+function updateStatus(id, status) {
+    fetch("/complaints/update/", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({
+            id: id,
+            status: status
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || "Status updated");
+        loadComplaints();
+    });
+}
+
+// 🗑 Delete Complaint
+function deleteComplaint(id) {
+    if (!confirm("Delete this complaint?")) return;
+
+    fetch(`/complaints/delete/${id}/`, {
+        method: "DELETE",
+        headers: {
+            "X-CSRFToken": csrfToken
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || "Deleted");
+        loadComplaints();
+    });
+}
+
+// 🎯 Format Priority
+function formatPriority(level) {
+    if (level === "H") return "🔴 High";
+    if (level === "M") return "🟡 Medium";
+    if (level === "L") return "🟢 Low";
+    return level;
+}
+</script>
+
+{% endblock %}

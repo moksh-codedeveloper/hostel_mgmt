@@ -3,10 +3,18 @@
 {% block title %}Update Account | HMS{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width:500px; margin:auto; margin-top:40px;">
+<div class="card" style="max-width:520px; margin:60px auto;">
 
-    <h2 style="text-align:center;">Update Account Info</h2>
-    <hr>
+    <h2 style="text-align:center; margin-bottom:5px;">Update Account</h2>
+    <p style="text-align:center; color:var(--muted); margin-bottom:20px;">
+        Update your basic account details
+    </p>
+
+    {% if error %}
+        <div class="alert">
+            {{ error }}
+        </div>
+    {% endif %}
 
     <form method="POST">
         {% csrf_token %}
@@ -17,12 +25,10 @@
         <label>Full Name</label>
         <input type="text" name="full_name" value="{{ request.user.full_name }}" required>
 
-        <button type="submit" style="width:100%; margin-top:10px;">Update</button>
+        <button type="submit" style="width:100%; margin-top:10px;">
+            Save Changes
+        </button>
     </form>
-
-    {% if error %}
-        <p style="color:red; margin-top:10px;">{{ error }}</p>
-    {% endif %}
 
 </div>
 {% endblock %}

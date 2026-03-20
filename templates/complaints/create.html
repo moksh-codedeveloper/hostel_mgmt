@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}New Complaint | HMS{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:520px; margin:60px auto;">
+
+    <h2 style="text-align:center; margin-bottom:5px;">Raise Complaint</h2>
+    <p style="text-align:center; color:var(--muted); margin-bottom:20px;">
+        Describe your issue clearly
+    </p>
+
+    <div id="errorBox" class="alert" style="display:none;"></div>
+    <div id="successBox" style="display:none; color:green; margin-bottom:10px;"></div>
+
+    <form id="complaintForm">
+        {% csrf_token %}
+
+        <label>Title</label>
+        <input type="text" id="title" required>
+
+        <label>Description</label>
+        <textarea id="description" rows="4" required></textarea>
+
+        <label>Priority</label>
+        <select id="attention_level">
+            <option value="L">Low</option>
+            <option value="M">Medium</option>
+            <option value="H">High</option>
+        </select>
+
+        <button type="submit" style="width:100%; margin-top:10px;">
+            Submit Complaint
+        </button>
+    </form>
+
+</div>
+
+<script>
+document.getElementById("complaintForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const data = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        attention_level: document.getElementById("attention_level").value
+    };
+
+    fetch("/complaints/create/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.errors) {
+            document.getElementById("errorBox").style.display = "block";
+            document.getElementById("errorBox").innerText = JSON.stringify(data.errors);
+        } else {
+            document.getElementById("successBox").style.display = "block";
+            document.getElementById("successBox").innerText = "Complaint submitted!";
+            document.getElementById("complaintForm").reset();
+        }
+    });
+});
+</script>
+
+{% endblock %}

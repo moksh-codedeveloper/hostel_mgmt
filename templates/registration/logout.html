@@ -3,11 +3,16 @@
 {% block title %}Logged Out | HMS{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width:400px; margin:auto; margin-top:50px; text-align:center;">
-    <h2>You have been logged out</h2>
-    <p>Thank you for using the Hostel Management System.</p>
+<div class="card" style="max-width:420px; margin:60px auto; text-align:center;">
+
+    <h2 style="margin-bottom:10px;">Logged Out</h2>
+    <p style="color:var(--muted); margin-bottom:20px;">
+        You have successfully logged out.
+    </p>
+
     <a href="{% url 'login' %}">
-        <button>Login Again</button>
+        <button style="width:100%;">Login Again</button>
     </a>
+
 </div>
 {% endblock %}

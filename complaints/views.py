@@ -4,8 +4,17 @@ from django.http import JsonResponse
 import json
 from .forms import UpdateStatusComplaint
 from django.db import IntegrityError
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from .models import Complaint
+
+@login_required
+def complaints_page(request):
+    return render(request, "complaints/list.html")
+
+@login_required
+def create_complaint_page(request):
+    return render(request, "complaints/create.html")
+
 @login_required
 def create_complain(request):
     if request.method != "POST":
