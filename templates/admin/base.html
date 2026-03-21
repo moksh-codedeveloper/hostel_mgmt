@@ -1,0 +1,91 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Hostel Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name" style="margin:0;">
+    🏨 Hostel Admin Panel
+</h1>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+
+/* ===== GLOBAL RESET ===== */
+body {
+    background-color: #f4f6f9;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== HEADER ===== */
+#header {
+    background: #111827;
+    color: #fff;
+    padding: 15px 20px;
+}
+
+/* ===== CONTENT ===== */
+#content {
+    padding: 25px !important;
+}
+
+/* ===== BREADCRUMBS ===== */
+div.breadcrumbs {
+    background: none;
+    padding: 10px 0;
+    color: #6b7280;
+}
+
+/* ===== MODULE CARDS ===== */
+.module {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+/* ===== TABLE ===== */
+.results {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.results th {
+    background: #f3f4f6;
+    font-weight: 600;
+}
+
+.results td {
+    padding: 12px;
+}
+
+/* ===== HOVER EFFECT ===== */
+.results tr:hover {
+    background: #f9fafb;
+}
+
+/* ===== BUTTON ===== */
+.button, input[type=submit] {
+    background: #2563eb;
+    border-radius: 6px;
+    border: none;
+}
+
+.button:hover {
+    background: #1d4ed8;
+}
+
+/* ===== INPUT ===== */
+input, select, textarea {
+    border-radius: 6px;
+    padding: 8px;
+}
+
+/* ===== CLEAN SIDEBAR ===== */
+#content-main .app {
+    margin-bottom: 20px;
+}
+
+</style>
+{% endblock %}

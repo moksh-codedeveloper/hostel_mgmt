@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Fees{% endblock %}
+
+{% block content %}
+
+<h2>Fees Dashboard</h2>
+
+<!-- Latest Fee -->
+<div class="card">
+	<h3>Latest Fee</h3>
+	<div id="latest-fee">Loading...</div>
+</div>
+
+<br />
+
+<!-- Unpaid Fees -->
+<div class="card">
+	<h3>Unpaid Fees</h3>
+
+	<table id="unpaid-table">
+		<tr>
+			<th>Total</th>
+			<th>Paid</th>
+			<th>Status</th>
+		</tr>
+	</table>
+</div>
+
+<br />
+
+<!-- Fee History -->
+<div class="card">
+	<h3>Fee History</h3>
+
+	<table id="history-table">
+		<tr>
+			<th>Total</th>
+			<th>Paid</th>
+			<th>Status</th>
+			<th>Date</th>
+		</tr>
+	</table>
+</div>
+
+<script>
+async function loadLatestFee() {
+	const res = await fetch("/fees/last/");
+	const data = await res.json();
+
+	const el = document.getElementById("latest-fee");
+
+	if (!data.fee) {
+		el.innerHTML = "No fee record found";
+		return;
+	}
+
+	const fee = data.fee;
+
+	el.innerHTML = `
+		<p><strong>Total:</strong> ₹${fee.total_amount}</p>
+		<p><strong>Paid:</strong> ₹${fee.amount_paid}</p>
+		<p><strong>Status:</strong> ${fee.status}</p>
+	`;
+}
+
+async function loadUnpaidFees() {
+	const res = await fetch("/fees/status/?status=UP");
+	const data = await res.json();
+
+	const table = document.getElementById("unpaid-table");
+
+	data.fees.forEach(fee => {
+		const row = `
+			<tr>
+				<td>₹${fee.total_amount}</td>
+				<td>₹${fee.amount_paid}</td>
+				<td style="color:red;">${fee.status}</td>
+			</tr>
+		`;
+		table.innerHTML += row;
+	});
+}
+
+async function loadHistory() {
+	const res = await fetch("/fees/history/");
+	const data = await res.json();
+
+	const table = document.getElementById("history-table");
+
+	data.fees.forEach(fee => {
+		const row = `
+			<tr>
+				<td>₹${fee.total_amount}</td>
+				<td>₹${fee.amount_paid}</td>
+				<td>${fee.status}</td>
+				<td>${new Date(fee.created_at).toLocaleDateString()}</td>
+			</tr>
+		`;
+		table.innerHTML += row;
+	});
+}
+
+loadLatestFee();
+loadUnpaidFees();
+loadHistory();
+</script>
+
+{% endblock %}

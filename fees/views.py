@@ -1,6 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.shortcuts import render
 from .models import Fees
+
+@login_required
+def fees_page(request):
+    return render(request, "fees/fees.html")
 
 @login_required
 def fees_history(request):

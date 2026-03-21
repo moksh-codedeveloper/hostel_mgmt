@@ -6,183 +6,612 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{% block title %}Hostel Management System{% endblock %}</title>
 
+		<link
+			href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+
 		<style>
+			/* ===== CSS VARIABLES ===== */
 			:root {
-				--primary: #2563eb;
-				--primary-dark: #1d4ed8;
-				--bg: #f4f6f9;
-				--text: #1f2937;
-				--muted: #6b7280;
-				--card: #ffffff;
-				--border: #e5e7eb;
+				--bg-base: #080c14;
+				--bg-surface: #0d1321;
+				--bg-raised: #111827;
+				--bg-hover: #1a2234;
+				--border: #1e2d45;
+				--border-bright: #2a3f5f;
+				--accent: #3b82f6;
+				--accent-glow: rgba(59, 130, 246, 0.15);
+				--accent-dim: #1d4ed8;
+				--text-primary: #e2e8f0;
+				--text-secondary: #94a3b8;
+				--text-muted: #475569;
+				--success: #10b981;
+				--warning: #f59e0b;
+				--danger: #ef4444;
+				--font-display: "Syne", sans-serif;
+				--font-body: "DM Sans", sans-serif;
+				--radius: 8px;
+				--radius-lg: 12px;
+				--shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 			}
 
-			* {
+			/* ===== RESET & BASE ===== */
+			*,
+			*::before,
+			*::after {
 				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
 			}
 
 			body {
-				margin: 0;
-				font-family: "Segoe UI", Tahoma, sans-serif;
-				background-color: var(--bg);
-				color: var(--text);
+				background-color: var(--bg-base);
+				color: var(--text-primary);
+				font-family: var(--font-body);
+				font-size: 15px;
+				line-height: 1.6;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
 			}
 
-			/* HEADER */
+			/* subtle grid texture on body */
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background-image:
+					linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+				background-size: 40px 40px;
+				pointer-events: none;
+				z-index: 0;
+			}
+
+			/* ===== HEADER ===== */
 			header {
-				background: linear-gradient(90deg, #1f2937, #111827);
-				color: white;
-				padding: 18px 30px;
-				font-size: 20px;
-				font-weight: 600;
-				letter-spacing: 0.5px;
+				position: relative;
+				z-index: 100;
+				background: var(--bg-surface);
+				border-bottom: 1px solid var(--border);
+				padding: 0 28px;
+				height: 60px;
+				display: flex;
+				align-items: center;
+				font-family: var(--font-display);
+				font-size: 18px;
+				font-weight: 700;
+				letter-spacing: -0.3px;
+				color: var(--text-primary);
+				box-shadow: 0 1px 20px rgba(0, 0, 0, 0.3);
 			}
 
-			/* NAVBAR */
+			header::before {
+				content: "🏨";
+				margin-right: 10px;
+				font-size: 20px;
+			}
+
+			header span.badge {
+				margin-left: auto;
+				font-family: var(--font-body);
+				font-size: 11px;
+				font-weight: 500;
+				color: var(--accent);
+				background: var(--accent-glow);
+				border: 1px solid rgba(59, 130, 246, 0.3);
+				padding: 3px 10px;
+				border-radius: 20px;
+				letter-spacing: 0.5px;
+				text-transform: uppercase;
+			}
+
+			/* ===== NAVIGATION ===== */
 			nav {
-				background-color: #111827;
-				padding: 12px 30px;
+				position: relative;
+				z-index: 99;
+				background: var(--bg-surface);
+				border-bottom: 1px solid var(--border);
+				padding: 0 28px;
+				height: 50px;
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
+				gap: 16px;
 			}
 
-			.nav-left a {
-				color: #d1d5db;
-				margin-right: 18px;
-				text-decoration: none;
-				font-size: 14px;
-				transition: 0.2s;
-			}
-
-			.nav-left a:hover {
-				color: white;
+			.nav-left {
+				display: flex;
+				align-items: center;
+				gap: 4px;
 			}
 
 			.nav-right {
 				display: flex;
 				align-items: center;
-				gap: 10px;
-				color: #d1d5db;
-				font-size: 14px;
+				gap: 12px;
+			}
+
+			nav a {
+				color: var(--text-secondary);
+				text-decoration: none;
+				font-size: 13.5px;
+				font-weight: 500;
+				padding: 6px 14px;
+				border-radius: var(--radius);
+				transition: all 0.2s ease;
+				letter-spacing: 0.1px;
+			}
+
+			nav a:hover {
+				color: var(--text-primary);
+				background: var(--bg-hover);
+			}
+
+			nav a.active {
+				color: var(--accent);
+				background: var(--accent-glow);
+			}
+
+			.nav-right span {
+				font-size: 13px;
+				color: var(--text-secondary);
+				font-weight: 500;
+			}
+
+			.nav-right span::before {
+				content: "👤 ";
 			}
 
 			.nav-right form {
-				margin: 0;
+				display: inline;
 			}
 
-			/* MAIN */
+			.nav-right button {
+				background: transparent;
+				border: 1px solid var(--border-bright);
+				color: var(--text-secondary);
+				padding: 5px 14px;
+				border-radius: var(--radius);
+				cursor: pointer;
+				font-family: var(--font-body);
+				font-size: 13px;
+				font-weight: 500;
+				transition: all 0.2s ease;
+			}
+
+			.nav-right button:hover {
+				border-color: var(--danger);
+				color: var(--danger);
+				background: rgba(239, 68, 68, 0.08);
+			}
+
+			/* ===== MAIN CONTENT ===== */
 			main {
-				padding: 30px 20px;
-				min-height: 80vh;
+				flex: 1;
+				position: relative;
+				z-index: 1;
+				padding: 32px 28px;
 			}
 
 			.container {
-				max-width: 1000px;
-				margin: auto;
+				max-width: 1200px;
+				margin: 0 auto;
 			}
 
-			/* CARD */
-			.card {
-				background: var(--card);
-				padding: 22px;
-				border-radius: 10px;
+			/* ===== DJANGO ADMIN OVERRIDES ===== */
+			#content,
+			#content-main {
+				background-color: transparent;
+				color: var(--text-primary);
+			}
+
+			#container {
+				background: var(--bg-base);
+			}
+
+			/* Breadcrumbs */
+			div.breadcrumbs {
+				background: var(--bg-surface);
+				border-bottom: 1px solid var(--border);
+				color: var(--text-secondary);
+				padding: 10px 28px;
+				font-size: 13px;
+				position: relative;
+				z-index: 98;
+			}
+
+			div.breadcrumbs a {
+				color: var(--accent);
+				text-decoration: none;
+			}
+
+			div.breadcrumbs a:hover {
+				text-decoration: underline;
+			}
+
+			/* Module cards */
+			.module {
+				background: var(--bg-raised);
+				color: var(--text-primary);
 				border: 1px solid var(--border);
-				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+				border-radius: var(--radius-lg);
+				overflow: hidden;
+				margin-bottom: 20px;
+				box-shadow: var(--shadow);
 			}
 
-			/* BUTTON */
-			button {
-				padding: 8px 14px;
-				background-color: var(--primary);
-				color: white;
+			.module h2,
+			.module caption {
+				background: var(--bg-surface);
+				color: var(--text-primary);
+				font-family: var(--font-display);
+				font-size: 13px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				padding: 12px 16px;
+				border-bottom: 1px solid var(--border);
+			}
+
+			.module table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			/* Results table */
+			.results {
+				background-color: var(--bg-raised);
+				border-radius: var(--radius-lg);
+				overflow: hidden;
+				border: 1px solid var(--border);
+			}
+
+			.results th {
+				background: var(--bg-surface);
+				color: var(--text-secondary);
+				font-size: 12px;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.8px;
+				padding: 12px 16px;
+				border-bottom: 1px solid var(--border);
+			}
+
+			.results td {
+				color: var(--text-primary);
+				padding: 12px 16px;
+				border-bottom: 1px solid var(--border);
+				font-size: 14px;
+			}
+
+			.results tr:last-child td {
+				border-bottom: none;
+			}
+
+			.results tr:hover td {
+				background: var(--bg-hover);
+			}
+
+			/* App index boxes */
+			.app-index .module table th a,
+			.app-index .module table td a {
+				color: var(--accent);
+			}
+
+			#content-related {
+				background: var(--bg-raised);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-lg);
+				padding: 0;
+				overflow: hidden;
+			}
+
+			#content-related h2 {
+				font-family: var(--font-display);
+				font-size: 12px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				color: var(--text-secondary);
+				padding: 12px 16px;
+				background: var(--bg-surface);
+				border-bottom: 1px solid var(--border);
+				margin: 0;
+			}
+
+			#content-related ul {
+				list-style: none;
+				padding: 8px 0;
+			}
+
+			#content-related ul li {
+				padding: 6px 16px;
+			}
+
+			#content-related ul li a {
+				font-size: 13px;
+			}
+
+			/* Action list recent */
+			.actionlist li {
+				border-bottom: 1px solid var(--border);
+				padding: 8px 0;
+			}
+
+			.actionlist li:last-child {
+				border-bottom: none;
+			}
+
+			/* Sidebar */
+			#content-related .module {
+				margin: 0;
 				border: none;
-				border-radius: 6px;
-				cursor: pointer;
-				transition: 0.2s;
+				border-radius: 0;
+				box-shadow: none;
 			}
 
-			button:hover {
-				background-color: var(--primary-dark);
+			/* Messages / alerts */
+			ul.messagelist {
+				list-style: none;
+				padding: 0 28px;
+				margin: 12px 0;
 			}
 
-			/* INPUTS */
+			ul.messagelist li {
+				padding: 10px 16px;
+				border-radius: var(--radius);
+				font-size: 13.5px;
+				margin-bottom: 8px;
+			}
+
+			ul.messagelist li.success {
+				background: rgba(16, 185, 129, 0.1);
+				border: 1px solid rgba(16, 185, 129, 0.3);
+				color: #34d399;
+			}
+
+			ul.messagelist li.warning {
+				background: rgba(245, 158, 11, 0.1);
+				border: 1px solid rgba(245, 158, 11, 0.3);
+				color: #fbbf24;
+			}
+
+			ul.messagelist li.error {
+				background: rgba(239, 68, 68, 0.1);
+				border: 1px solid rgba(239, 68, 68, 0.3);
+				color: #f87171;
+			}
+
+			/* Forms */
 			input,
 			select,
 			textarea {
-				width: 100%;
-				padding: 10px;
-				margin-bottom: 12px;
-				border: 1px solid var(--border);
-				border-radius: 6px;
+				background: var(--bg-base);
+				color: var(--text-primary);
+				border: 1px solid var(--border-bright);
+				border-radius: var(--radius);
+				padding: 8px 12px;
+				font-family: var(--font-body);
 				font-size: 14px;
+				width: 100%;
+				transition:
+					border-color 0.2s ease,
+					box-shadow 0.2s ease;
+				outline: none;
 			}
 
 			input:focus,
+			select:focus,
 			textarea:focus {
-				outline: none;
-				border-color: var(--primary);
+				border-color: var(--accent);
+				box-shadow: 0 0 0 3px var(--accent-glow);
 			}
 
-			/* TABLE */
-			table {
-				width: 100%;
-				border-collapse: collapse;
-				margin-top: 10px;
-			}
-
-			table th,
-			table td {
-				padding: 10px;
-				border-bottom: 1px solid var(--border);
-				text-align: left;
-			}
-
-			table th {
-				background-color: #f9fafb;
+			input[type="submit"],
+			input[type="button"],
+			button[type="submit"],
+			.button,
+			.submit-row input {
+				background: var(--accent);
+				color: #fff;
+				border: none;
+				padding: 9px 20px;
+				border-radius: var(--radius);
+				font-family: var(--font-body);
 				font-weight: 600;
-			}
-
-			/* ALERT */
-			.alert {
-				padding: 10px;
-				background-color: #fee2e2;
-				color: #991b1b;
-				border-radius: 6px;
-				margin-bottom: 10px;
-			}
-
-			/* FOOTER */
-			footer {
-				background-color: #e5e7eb;
-				padding: 12px 30px;
 				font-size: 14px;
-				text-align: center;
-				color: var(--muted);
+				cursor: pointer;
+				transition:
+					background 0.2s ease,
+					transform 0.1s ease;
+				width: auto;
 			}
 
-			/* RESPONSIVE */
-			@media (max-width: 768px) {
-				nav {
-					flex-direction: column;
-					align-items: flex-start;
-					gap: 10px;
-				}
-
-				.nav-left a {
-					display: inline-block;
-					margin-bottom: 5px;
-				}
+			input[type="submit"]:hover,
+			.button:hover {
+				background: var(--accent-dim);
+				transform: translateY(-1px);
 			}
-			select {
-				padding: 5px;
+
+			/* Labels */
+			label,
+			.form-row label {
+				color: var(--text-secondary);
+				font-size: 13px;
+				font-weight: 500;
+				display: block;
+				margin-bottom: 5px;
+			}
+
+			/* Fieldsets */
+			fieldset {
+				border: 1px solid var(--border);
+				border-radius: var(--radius-lg);
+				padding: 20px;
+				margin-bottom: 20px;
+			}
+
+			fieldset h2 {
+				font-family: var(--font-display);
+				color: var(--text-secondary);
+				font-size: 12px;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				margin-bottom: 16px;
+				font-weight: 700;
+			}
+
+			/* Submit row */
+			.submit-row {
+				background: var(--bg-surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				padding: 12px 16px;
+				display: flex;
+				gap: 10px;
+				align-items: center;
+				margin-bottom: 20px;
+			}
+
+			/* Delete link */
+			.deletelink {
+				color: var(--danger) !important;
+				font-size: 13px;
+			}
+
+			/* Paginator */
+			.paginator {
+				color: var(--text-secondary);
+				font-size: 13px;
+				padding: 12px 0;
+			}
+
+			.paginator a {
+				color: var(--accent);
+				text-decoration: none;
+				padding: 4px 8px;
 				border-radius: 4px;
+				transition: background 0.2s;
+			}
+
+			.paginator a:hover {
+				background: var(--accent-glow);
+			}
+
+			/* Object tools */
+			ul.object-tools {
+				list-style: none;
+				display: flex;
+				gap: 8px;
+				justify-content: flex-end;
+				padding: 0;
+				margin-bottom: 16px;
+			}
+
+			ul.object-tools li a {
+				background: var(--accent);
+				color: #fff;
+				padding: 7px 16px;
+				border-radius: var(--radius);
+				font-size: 13px;
+				font-weight: 600;
+				text-decoration: none;
+				display: block;
+				transition: background 0.2s;
+			}
+
+			ul.object-tools li a:hover {
+				background: var(--accent-dim);
+			}
+
+			/* Links */
+			a {
+				color: var(--accent);
+				text-decoration: none;
+				transition: color 0.2s;
+			}
+
+			a:hover {
+				color: #93c5fd;
+			}
+
+			/* Select all checkbox row */
+			#action-toggle {
+				accent-color: var(--accent);
+			}
+
+			/* Search bar in changelist */
+			#changelist-search input[type="text"] {
+				max-width: 320px;
+			}
+
+			/* Help text */
+			.help {
+				color: var(--text-muted);
+				font-size: 12px;
+				margin-top: 4px;
+			}
+
+			/* Errornote */
+			.errornote {
+				background: rgba(239, 68, 68, 0.1);
+				border: 1px solid rgba(239, 68, 68, 0.3);
+				color: #f87171;
+				padding: 12px 16px;
+				border-radius: var(--radius);
+				font-size: 14px;
+				margin-bottom: 16px;
+			}
+
+			/* Error list */
+			ul.errorlist {
+				list-style: none;
+				color: #f87171;
+				font-size: 13px;
+				margin-top: 4px;
+			}
+
+			/* ===== FOOTER ===== */
+			footer {
+				position: relative;
+				z-index: 1;
+				background: var(--bg-surface);
+				border-top: 1px solid var(--border);
+				text-align: center;
+				padding: 14px 28px;
+				font-size: 12.5px;
+				color: var(--text-muted);
+				letter-spacing: 0.3px;
+			}
+
+			footer::before {
+				content: "🏨 ";
+			}
+
+			/* ===== SCROLLBAR ===== */
+			::-webkit-scrollbar {
+				width: 8px;
+				height: 8px;
+			}
+			::-webkit-scrollbar-track {
+				background: var(--bg-base);
+			}
+			::-webkit-scrollbar-thumb {
+				background: var(--border-bright);
+				border-radius: 4px;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background: var(--text-muted);
 			}
 		</style>
 	</head>
-
 	<body>
-		<header>Hostel Management System</header>
+		<header>
+			Hostel Management System
+			<span class="badge">Admin Panel</span>
+		</header>
 
 		{% if user.is_authenticated %}
 		<nav>
@@ -191,24 +620,28 @@
 				<a href="{% url 'student_profile' %}">Profile</a>
 				<a href="{% url 'list_complaints' %}">Complaints</a>
 				<a href="/leaves/all/">Leaves</a>
-				<a href="/fees/history/">Fees</a>
+				<a href="{% url 'fees_page' %}">Fees</a>
 			</div>
-
 			<div class="nav-right">
 				<span>{{ user.username }}</span>
-
 				<form method="POST" action="{% url 'user_logout' %}">
 					{% csrf_token %}
 					<button type="submit">Logout</button>
 				</form>
 			</div>
 		</nav>
+		{% endif %} {% if messages %}
+		<ul class="messagelist">
+			{% for message in messages %}
+			<li class="{{ message.tags }}">{{ message }}</li>
+			{% endfor %}
+		</ul>
 		{% endif %}
 
 		<main>
 			<div class="container">{% block content %}{% endblock %}</div>
 		</main>
 
-		<footer>© Hostel Management System</footer>
+		<footer>© 2025 Hostel Management System — All rights reserved</footer>
 	</body>
 </html>
