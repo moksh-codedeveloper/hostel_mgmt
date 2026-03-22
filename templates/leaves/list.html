@@ -100,7 +100,7 @@
     <h2>📅 My Leaves</h2>
     <p>Track your leave requests and their status</p>
   </div>
-  <a href="/leaves/create/" class="btn-new">+ New Leave</a>
+  <a href="{% url 'create_leaves_page' %}" class="btn-new">+ New Leave</a>
 </div>
 
 <div class="card">
@@ -126,7 +126,7 @@
 </div>
 
 <script>
-  fetch("/leaves/all/")
+  fetch("/leaves/all/api/")
     .then(res => res.json())
     .then(data => {
       const tbody = document.getElementById("leavesBody");

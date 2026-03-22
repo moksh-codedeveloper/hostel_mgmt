@@ -37,22 +37,20 @@ def create_leave(request):
         {"message": "Leave created successfully"},
         status=201
     )
-
 @login_required
 def get_all_leaves(request):
     leaves = Leaves.objects.filter(student=request.user.student)
-
     data = [
         {
-            "id": leave.id, # type: ignore
+            "id": leave.pk,
             "reason": leave.reason,
+            "place_on_leave": leave.place_on_leave,
             "status": leave.leave_status,
-            "from": leave.date_to_leave,
-            "to": leave.date_of_return,
+            "from": str(leave.date_to_leave),    # ← str() fixes it
+            "to": str(leave.date_of_return),      # ← str() fixes it
         }
         for leave in leaves
     ]
-
     return JsonResponse({"leaves": data})
 
 @login_required
@@ -78,3 +76,6 @@ def get_leave_by_id(request, leave_id):
 @login_required
 def leaves_page(request):
     return render(request, "leaves/list.html")
+@login_required
+def create_leaves_page(request):
+    return render(request,"leaves/create.html")
