@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .forms import CreateLeavesForm
 from .models import Leaves
+from django.shortcuts import render
 
 @login_required
 def create_leave(request):
@@ -73,3 +74,7 @@ def get_leave_by_id(request, leave_id):
         "from": leave.date_to_leave,
         "to": leave.date_of_return,
     })
+
+@login_required
+def leaves_page(request):
+    return render(request, "leaves/list.html")

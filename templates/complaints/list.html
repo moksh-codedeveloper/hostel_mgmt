@@ -1,126 +1,243 @@
 {% extends "base.html" %}
 {% block title %}Complaints | HMS{% endblock %}
-
 {% block content %}
-<div class="card" style="margin:40px auto;">
 
-    <!-- Header -->
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-            <h2 style="margin-bottom:5px;">Complaints</h2>
-            <p style="color:var(--muted);">View and manage your complaints</p>
-        </div>
+<style>
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
 
-        <a href="/complaints/create/">
-            <button>+ New Complaint</button>
-        </a>
-    </div>
+  .page-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
 
-    <hr>
+  .page-header p {
+    font-size: 13px;
+    color: #475569;
+  }
 
-    <!-- CSRF TOKEN (important for JS requests) -->
-    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+  .btn-new {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.1s;
+    box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+    white-space: nowrap;
+  }
 
-    <!-- Table -->
-    <table id="complaintsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+  .btn-new:hover { opacity: 0.88; transform: translateY(-1px); }
 
+  .card {
+    background: #101828;
+    border: 1px solid #1c2d42;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .complaints-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .complaints-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #475569;
+    padding: 12px 16px;
+    border-bottom: 1px solid #1c2d42;
+    background: #0c1220;
+  }
+
+  .complaints-table td {
+    padding: 13px 16px;
+    color: #e2e8f0;
+    border-bottom: 1px solid #1c2d42;
+    vertical-align: middle;
+  }
+
+  .complaints-table tr:last-child td { border-bottom: none; }
+  .complaints-table tr:hover td { background: #162030; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-green  { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #10b981; }
+  .badge-yellow { background: rgba(245,158,11,0.1);  border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; }
+  .badge-gray   { background: rgba(71,85,105,0.2);   border: 1px solid #1c2d42;              color: #64748b; }
+  .badge-red    { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #ef4444; }
+  .badge-blue   { background: rgba(59,130,246,0.1);  border: 1px solid rgba(59,130,246,0.3); color: #3b82f6; }
+
+  .status-select {
+    background: #0c1220;
+    color: #94a3b8;
+    border: 1px solid #1c2d42;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12.5px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    width: auto;
+  }
+
+  .status-select:focus {
+    border-color: #3b82f6;
+    outline: none;
+  }
+
+  .btn-delete {
+    background: transparent;
+    border: 1px solid #1c2d42;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .btn-delete:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: rgba(239,68,68,0.07);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #475569;
+  }
+
+  .empty-state span { display: block; font-size: 32px; margin-bottom: 10px; }
+  .empty-state p { font-size: 13.5px; }
+</style>
+
+<input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+
+<div class="page-header">
+  <div>
+    <h2>📋 Complaints</h2>
+    <p>View and manage your hostel complaints</p>
+  </div>
+  <a href="/complaints/create/" class="btn-new">+ New Complaint</a>
+</div>
+
+<div class="card">
+  <table class="complaints-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="complaintsBody">
+      <tr>
+        <td colspan="5">
+          <div class="empty-state"><span>⏳</span><p>Loading complaints...</p></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <script>
-const csrfToken = document.getElementById("csrfToken").value;
+  const csrfToken = document.getElementById("csrfToken").value;
 
-// 🚀 Load complaints on page load
-loadComplaints();
+  loadComplaints();
 
-function loadComplaints() {
+  function loadComplaints() {
     fetch("/complaints/list/")
-    .then(res => res.json())
-    .then(data => {
-        const table = document.querySelector("#complaintsTable tbody");
-        table.innerHTML = "";
-
-        data.complaints.forEach(c => {
-            table.innerHTML += `
-                <tr>
-                    <td>${c.id}</td>
-                    <td>${c.title}</td>
-
-                    <td>
-                        <select onchange="updateStatus(${c.id}, this.value)">
-                            <option value="U" ${c.status==="U"?"selected":""}>🕓 Pending</option>
-                            <option value="P" ${c.status==="P"?"selected":""}>🔧 In Progress</option>
-                            <option value="R" ${c.status==="R"?"selected":""}>✅ Resolved</option>
-                        </select>
-                    </td>
-
-                    <td>${formatPriority(c.attention_level)}</td>
-
-                    <td>
-                        <button onclick="deleteComplaint(${c.id})">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-    });
-}
-
-// 🔄 Update Status
-function updateStatus(id, status) {
-    fetch("/complaints/update/", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken
-        },
-        body: JSON.stringify({
-            id: id,
-            status: status
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message || "Status updated");
-        loadComplaints();
-    });
-}
-
-// 🗑 Delete Complaint
-function deleteComplaint(id) {
-    if (!confirm("Delete this complaint?")) return;
-
-    fetch(`/complaints/delete/${id}/`, {
-        method: "DELETE",
-        headers: {
-            "X-CSRFToken": csrfToken
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById("complaintsBody");
+        if (!data.complaints || data.complaints.length === 0) {
+          tbody.innerHTML = `
+            <tr><td colspan="5">
+              <div class="empty-state"><span>📭</span><p>No complaints filed yet</p></div>
+            </td></tr>`;
+          return;
         }
+        tbody.innerHTML = "";
+        data.complaints.forEach(c => {
+          tbody.innerHTML += `
+            <tr>
+              <td style="color:#475569; font-size:12px;">#${c.id}</td>
+              <td>
+                <div style="font-weight:500;">${c.title}</div>
+                <div style="font-size:12px; color:#475569; margin-top:3px;">${c.description.substring(0,60)}${c.description.length > 60 ? '...' : ''}</div>
+              </td>
+              <td>${formatPriority(c.attention_level)}</td>
+              <td>
+                <select class="status-select" onchange="updateStatus(${c.id}, this.value)">
+                  <option value="U" ${c.status==="U"?"selected":""}>Unopened</option>
+                  <option value="O" ${c.status==="O"?"selected":""}>Opened</option>
+                  <option value="R" ${c.status==="R"?"selected":""}>Resolved</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn-delete" onclick="deleteComplaint(${c.id})">Delete</button>
+              </td>
+            </tr>`;
+        });
+      });
+  }
+
+  function updateStatus(id, status) {
+    fetch("/complaints/update/", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+      body: JSON.stringify({ id, status })
+    })
+    .then(res => res.json())
+    .then(() => loadComplaints());
+  }
+
+  function deleteComplaint(id) {
+    if (!confirm("Delete this complaint?")) return;
+    fetch(`/complaints/delete/${id}/`, {
+      method: "DELETE",
+      headers: { "X-CSRFToken": csrfToken }
     })
     .then(res => res.json())
     .then(data => {
-        alert(data.message || "Deleted");
-        loadComplaints();
+      alert(data.message || "Deleted");
+      loadComplaints();
     });
-}
+  }
 
-// 🎯 Format Priority
-function formatPriority(level) {
-    if (level === "H") return "🔴 High";
-    if (level === "M") return "🟡 Medium";
-    if (level === "L") return "🟢 Low";
-    return level;
-}
+  function formatPriority(level) {
+    if (level === "I") return `<span class="badge badge-red">Immediate</span>`;
+    if (level === "H") return `<span class="badge badge-yellow">High</span>`;
+    if (level === "M") return `<span class="badge badge-blue">Medium</span>`;
+    return `<span class="badge badge-gray">${level}</span>`;
+  }
 </script>
 
 {% endblock %}

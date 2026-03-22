@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | HMS{% endblock %}
+{% block content %}
+
+<style>
+  .dash-header {
+    margin-bottom: 28px;
+  }
+
+  .dash-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .dash-header p {
+    font-size: 13px;
+    color: #475569;
+  }
+
+  /* STAT CARDS ROW */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    background: #101828;
+    border: 1px solid #1c2d42;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-card .stat-icon {
+    font-size: 20px;
+  }
+
+  .stat-card .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  .stat-card .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #e2e8f0;
+    line-height: 1;
+  }
+
+  .stat-card .stat-sub {
+    font-size: 12px;
+    color: #475569;
+  }
+
+  /* TWO COL LAYOUT */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .card {
+    background: #101828;
+    border: 1px solid #1c2d42;
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #1c2d42;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card h3 a {
+    font-size: 11px;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .card h3 a:hover { color: #93c5fd; }
+
+  /* PROFILE INFO */
+  .profile-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .avatar {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .profile-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .profile-username {
+    font-size: 12px;
+    color: #475569;
+    margin-top: 2px;
+  }
+
+  .info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .info-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #1c2d42;
+  }
+
+  .info-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .info-list .info-key {
+    color: #475569;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .info-list .info-val {
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-green  { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #10b981; }
+  .badge-red    { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #ef4444; }
+  .badge-yellow { background: rgba(245,158,11,0.1);  border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; }
+  .badge-blue   { background: rgba(59,130,246,0.1);  border: 1px solid rgba(59,130,246,0.3); color: #3b82f6; }
+  .badge-gray   { background: rgba(71,85,105,0.2);   border: 1px solid #1c2d42;              color: #64748b; }
+
+  /* QUICK LINKS */
+  .quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .quick-link {
+    background: #0c1220;
+    border: 1px solid #1c2d42;
+    border-radius: 9px;
+    padding: 14px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .quick-link:hover {
+    border-color: #3b82f6;
+    background: rgba(59,130,246,0.06);
+  }
+
+  .quick-link .ql-icon { font-size: 18px; }
+
+  .quick-link .ql-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #94a3b8;
+  }
+
+  .quick-link:hover .ql-text { color: #e2e8f0; }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 20px 0;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  .empty-state span { display: block; font-size: 24px; margin-bottom: 6px; }
+
+  /* FULL WIDTH CARD */
+  .card-full {
+    grid-column: 1 / -1;
+  }
+</style>
+
+<!-- Header -->
+<div class="dash-header">
+  <h2>👋 Welcome back, {{ student.user.full_name }}</h2>
+  <p>Here's your hostel overview</p>
+</div>
+
+<!-- Stats Row -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-icon">📚</span>
+    <div class="stat-label">Semester</div>
+    <div class="stat-value">{{ student.semester }}</div>
+    <div class="stat-sub">Current semester</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">📋</span>
+    <div class="stat-label">Complaints</div>
+    <div class="stat-value">{{ total_complaints }}</div>
+    <div class="stat-sub">{{ open_complaints }} open</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">📅</span>
+    <div class="stat-label">Leaves</div>
+    <div class="stat-value">{{ total_leaves }}</div>
+    <div class="stat-sub">{{ pending_leaves }} pending</div>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-icon">💳</span>
+    <div class="stat-label">Fee Status</div>
+    <div class="stat-value" style="font-size:15px; padding-top:4px;">
+      {% if latest_fee %}
+        {% if latest_fee.fees_status == "P" %}
+          <span class="badge badge-green">Paid</span>
+        {% else %}
+          <span class="badge badge-red">Unpaid</span>
+        {% endif %}
+      {% else %}
+        <span class="badge badge-gray">No Record</span>
+      {% endif %}
+    </div>
+    <div class="stat-sub">
+      {% if latest_fee %}₹{{ latest_fee.amount_paid }} / ₹{{ latest_fee.total_amount }}{% else %}Not assigned{% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Main Grid -->
+<div class="dash-grid">
+
+  <!-- Profile Card -->
+  <div class="card">
+    <h3>Student Profile <a href="{% url 'student_profile' %}">View Full →</a></h3>
+    <div class="profile-row">
+      <div class="avatar">{{ student.user.full_name|first|upper }}</div>
+      <div>
+        <div class="profile-name">{{ student.user.full_name }}</div>
+        <div class="profile-username">@{{ student.user.username }}</div>
+      </div>
+    </div>
+    <ul class="info-list">
+      <li>
+        <span class="info-key">Email</span>
+        <span class="info-val">{{ student.email }}</span>
+      </li>
+      <li>
+        <span class="info-key">Phone</span>
+        <span class="info-val">{{ student.phone_number }}</span>
+      </li>
+      <li>
+        <span class="info-key">College</span>
+        <span class="info-val">{{ student.college }}</span>
+      </li>
+      <li>
+        <span class="info-key">Gender</span>
+        <span class="info-val">{{ student.get_gender_display }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="card">
+    <h3>Quick Links</h3>
+    <div class="quick-links">
+      <a href="{% url 'student_profile' %}" class="quick-link">
+        <span class="ql-icon">👤</span>
+        <span class="ql-text">My Profile</span>
+      </a>
+      <a href="{% url 'list_complaints' %}" class="quick-link">
+        <span class="ql-icon">📋</span>
+        <span class="ql-text">Complaints</span>
+      </a>
+      <a href="/leaves/all/" class="quick-link">
+        <span class="ql-icon">📅</span>
+        <span class="ql-text">My Leaves</span>
+      </a>
+      <a href="{% url 'fees_page' %}" class="quick-link">
+        <span class="ql-icon">💳</span>
+        <span class="ql-text">Fees</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Complaints -->
+  <div class="card">
+    <h3>Recent Complaints <a href="{% url 'list_complaints' %}">View All →</a></h3>
+    {% if recent_complaints %}
+      <ul class="info-list">
+        {% for c in recent_complaints %}
+        <li>
+          <span class="info-val" style="font-size:13px;">{{ c.title }}</span>
+          <span>
+            {% if c.status == "O" %}
+              <span class="badge badge-yellow">Opened</span>
+            {% elif c.status == "R" %}
+              <span class="badge badge-green">Resolved</span>
+            {% else %}
+              <span class="badge badge-gray">Unopened</span>
+            {% endif %}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state"><span>📭</span>No complaints filed</div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Leaves -->
+  <div class="card">
+    <h3>Recent Leaves <a href="/leaves/all/">View All →</a></h3>
+    {% if recent_leaves %}
+      <ul class="info-list">
+        {% for l in recent_leaves %}
+        <li>
+          <span class="info-val" style="font-size:13px;">{{ l.place_on_leave }}</span>
+          <span>
+            {% if l.leave_status == "A" %}
+              <span class="badge badge-green">Approved</span>
+            {% elif l.leave_status == "P" %}
+              <span class="badge badge-yellow">Pending</span>
+            {% else %}
+              <span class="badge badge-red">Rejected</span>
+            {% endif %}
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state"><span>📭</span>No leave requests</div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,12 +1,11 @@
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.shortcuts import redirect, render
 
 def home(request):
-    return JsonResponse({
-        "message": "Hello Django 👋",
-        "project": "Hostel Management System",
-        "status": "alive",
-    })
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    return render(request, "home.html")
 
 def csrf_token(request):
     if request.method != "GET":

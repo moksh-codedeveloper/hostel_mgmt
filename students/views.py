@@ -125,3 +125,35 @@ def update_student(request):
         form = StudentUpdateForm(instance=student)
 
     return render(request, "student/update_student.html", {"form": form})
+
+# Add this to students/views.py
+
+@login_required
+def dashboard(request):
+    student = get_object_or_404(Student, user=request.user)
+
+    # Complaints
+    complaints = student.complaints.all()
+    total_complaints = complaints.count()
+    open_complaints = complaints.filter(status="O").count()
+    recent_complaints = complaints.order_by("-created_at")[:3]
+
+    # Leaves
+    leaves = student.leaves.all()
+    total_leaves = leaves.count()
+    pending_leaves = leaves.filter(leave_status="P").count()
+    recent_leaves = leaves.order_by("-created_at")[:3]
+
+    # Latest Fee
+    latest_fee = student.fees.order_by("-created_at").first()
+
+    return render(request, "student/dashboard.html", {
+        "student": student,
+        "total_complaints": total_complaints,
+        "open_complaints": open_complaints,
+        "recent_complaints": recent_complaints,
+        "total_leaves": total_leaves,
+        "pending_leaves": pending_leaves,
+        "recent_leaves": recent_leaves,
+        "latest_fee": latest_fee,
+    })

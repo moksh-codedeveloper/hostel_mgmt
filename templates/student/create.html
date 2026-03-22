@@ -1,47 +1,51 @@
-{% extends "base.html" %}
-{% block title %}Complete Profile | HMS{% endblock %}
-
+{% extends "base.html" %} {% block title %}Complete Profile | HMS{% endblock %}
 {% block content %}
-<div class="card" style="max-width:520px; margin:60px auto;">
+<div class="card" style="max-width: 520px; margin: 60px auto">
+	<h2 style="text-align: center; margin-bottom: 5px">Complete Your Profile</h2>
+	<p style="text-align: center; color: var(--muted); margin-bottom: 20px">
+		Just a few more details to get started
+	</p>
 
-    <h2 style="text-align:center; margin-bottom:5px;">Complete Your Profile</h2>
-    <p style="text-align:center; color:var(--muted); margin-bottom:20px;">
-        Just a few more details to get started
-    </p>
+	{% if error %}
+	<div class="alert">{{ error }}</div>
+	{% endif %}
 
-    {% if error %}
-        <div class="alert">
-            {{ error }}
-        </div>
-    {% endif %}
+	<form method="POST">
+		{% csrf_token %}
 
-    <form method="POST">
-        {% csrf_token %}
+		<label>Email</label>
+		<input type="email" name="email" placeholder="Enter your email" required />
 
-        <label>Email</label>
-        <input type="email" name="email" placeholder="Enter your email" required />
+		<label>Phone Number</label>
+		<input
+			type="text"
+			name="phone_number"
+			placeholder="Enter phone number"
+			required
+		/>
 
-        <label>Phone Number</label>
-        <input type="text" name="phone_number" placeholder="Enter phone number" required />
+		<label>Semester</label>
+		<input type="number" name="semester" placeholder="e.g. 5" required />
 
-        <label>Semester</label>
-        <input type="number" name="semester" placeholder="e.g. 5" required />
+		<label>Gender</label>
+		<select name="gender" required>
+			<option value="">Select Gender</option>
+			<option value="M">Male</option>
+			<option value="F">Female</option>
+			<option value="O">Other</option>
+		</select>
 
-        <label>Gender</label>
-        <select name="gender" required>
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-        </select>
+		<label>College</label>
+		<input
+			type="text"
+			name="college"
+			placeholder="Enter your college"
+			required
+		/>
 
-        <label>College</label>
-        <input type="text" name="college" placeholder="Enter your college" required />
-
-        <button type="submit" style="width:100%; margin-top:10px;">
-            Complete Profile
-        </button>
-    </form>
-
+		<button type="submit" style="width: 100%; margin-top: 10px">
+			Complete Profile
+		</button>
+	</form>
 </div>
 {% endblock %}

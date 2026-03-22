@@ -1,109 +1,275 @@
 {% extends "base.html" %}
-
 {% block title %}Fees{% endblock %}
-
 {% block content %}
 
-<h2>Fees Dashboard</h2>
+<style>
+  .fees-header {
+    margin-bottom: 28px;
+  }
+
+  .fees-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .fees-header p {
+    font-size: 13px;
+    color: #475569;
+  }
+
+  .card {
+    background: #101828;
+    border: 1px solid #1c2d42;
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #1c2d42;
+  }
+
+  /* LATEST FEE */
+  .fee-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .stat-box {
+    background: #0c1220;
+    border: 1px solid #1c2d42;
+    border-radius: 9px;
+    padding: 14px 16px;
+  }
+
+  .stat-box .stat-label {
+    font-size: 11px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .stat-box .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  /* STATUS BADGE */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .badge-paid {
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: #10b981;
+  }
+
+  .badge-unpaid {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #ef4444;
+  }
+
+  /* TABLE */
+  .fee-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .fee-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #475569;
+    padding: 8px 12px;
+    border-bottom: 1px solid #1c2d42;
+  }
+
+  .fee-table td {
+    padding: 11px 12px;
+    color: #e2e8f0;
+    border-bottom: 1px solid #1c2d42;
+  }
+
+  .fee-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .fee-table tr:hover td {
+    background: #162030;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 28px 0;
+    color: #475569;
+    font-size: 13px;
+  }
+
+  .empty-state span {
+    display: block;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+
+  .loading {
+    color: #475569;
+    font-size: 13px;
+    padding: 12px 0;
+  }
+</style>
+
+<div class="fees-header">
+  <h2>💳 Fees Dashboard</h2>
+  <p>Your hostel fee records — managed by admin</p>
+</div>
 
 <!-- Latest Fee -->
 <div class="card">
-	<h3>Latest Fee</h3>
-	<div id="latest-fee">Loading...</div>
+  <h3>Latest Fee</h3>
+  <div id="latest-fee"><span class="loading">Loading...</span></div>
 </div>
-
-<br />
 
 <!-- Unpaid Fees -->
 <div class="card">
-	<h3>Unpaid Fees</h3>
-
-	<table id="unpaid-table">
-		<tr>
-			<th>Total</th>
-			<th>Paid</th>
-			<th>Status</th>
-		</tr>
-	</table>
+  <h3>Unpaid Fees</h3>
+  <table class="fee-table">
+    <thead>
+      <tr>
+        <th>Total</th>
+        <th>Paid</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="unpaid-body"></tbody>
+  </table>
+  <div id="unpaid-empty" style="display:none;">
+    <div class="empty-state"><span>✅</span>No unpaid fees — you're all clear!</div>
+  </div>
 </div>
-
-<br />
 
 <!-- Fee History -->
 <div class="card">
-	<h3>Fee History</h3>
-
-	<table id="history-table">
-		<tr>
-			<th>Total</th>
-			<th>Paid</th>
-			<th>Status</th>
-			<th>Date</th>
-		</tr>
-	</table>
+  <h3>Fee History</h3>
+  <table class="fee-table">
+    <thead>
+      <tr>
+        <th>Total</th>
+        <th>Paid</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="history-body"></tbody>
+  </table>
+  <div id="history-empty" style="display:none;">
+    <div class="empty-state"><span>📭</span>No fee history found</div>
+  </div>
 </div>
 
 <script>
-async function loadLatestFee() {
-	const res = await fetch("/fees/last/");
-	const data = await res.json();
+  function statusBadge(status) {
+    if (status === "P") return `<span class="badge badge-paid">Paid</span>`;
+    return `<span class="badge badge-unpaid">Unpaid</span>`;
+  }
 
-	const el = document.getElementById("latest-fee");
+  async function loadLatestFee() {
+    const el = document.getElementById("latest-fee");
+    const res = await fetch("/fees/last/");
+    if (!res.ok) {
+      el.innerHTML = `<div class="empty-state"><span>📭</span>No fee record found</div>`;
+      return;
+    }
+    const data = await res.json();
+    const fee = data.fee;
+    el.innerHTML = `
+      <div class="fee-stats">
+        <div class="stat-box">
+          <div class="stat-label">Total Amount</div>
+          <div class="stat-value">₹${fee.total_amount}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Amount Paid</div>
+          <div class="stat-value">₹${fee.amount_paid}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Status</div>
+          <div class="stat-value" style="font-size:14px; padding-top:4px;">${statusBadge(fee.status)}</div>
+        </div>
+      </div>
+    `;
+  }
 
-	if (!data.fee) {
-		el.innerHTML = "No fee record found";
-		return;
-	}
+  async function loadUnpaidFees() {
+    const tbody = document.getElementById("unpaid-body");
+    const empty = document.getElementById("unpaid-empty");
+    const res = await fetch("/fees/status/?status=UP");
+    const data = await res.json();
+    if (!data.fees || data.fees.length === 0) {
+      empty.style.display = "block";
+      return;
+    }
+    data.fees.forEach(fee => {
+      tbody.innerHTML += `
+        <tr>
+          <td>₹${fee.total_amount}</td>
+          <td>₹${fee.amount_paid}</td>
+          <td>${statusBadge(fee.status)}</td>
+        </tr>
+      `;
+    });
+  }
 
-	const fee = data.fee;
+  async function loadHistory() {
+    const tbody = document.getElementById("history-body");
+    const empty = document.getElementById("history-empty");
+    const res = await fetch("/fees/history/");
+    const data = await res.json();
+    if (!data.fees || data.fees.length === 0) {
+      empty.style.display = "block";
+      return;
+    }
+    data.fees.forEach(fee => {
+      tbody.innerHTML += `
+        <tr>
+          <td>₹${fee.total_amount}</td>
+          <td>₹${fee.amount_paid}</td>
+          <td>${statusBadge(fee.status)}</td>
+          <td>${new Date(fee.created_at).toLocaleDateString("en-IN")}</td>
+        </tr>
+      `;
+    });
+  }
 
-	el.innerHTML = `
-		<p><strong>Total:</strong> ₹${fee.total_amount}</p>
-		<p><strong>Paid:</strong> ₹${fee.amount_paid}</p>
-		<p><strong>Status:</strong> ${fee.status}</p>
-	`;
-}
-
-async function loadUnpaidFees() {
-	const res = await fetch("/fees/status/?status=UP");
-	const data = await res.json();
-
-	const table = document.getElementById("unpaid-table");
-
-	data.fees.forEach(fee => {
-		const row = `
-			<tr>
-				<td>₹${fee.total_amount}</td>
-				<td>₹${fee.amount_paid}</td>
-				<td style="color:red;">${fee.status}</td>
-			</tr>
-		`;
-		table.innerHTML += row;
-	});
-}
-
-async function loadHistory() {
-	const res = await fetch("/fees/history/");
-	const data = await res.json();
-
-	const table = document.getElementById("history-table");
-
-	data.fees.forEach(fee => {
-		const row = `
-			<tr>
-				<td>₹${fee.total_amount}</td>
-				<td>₹${fee.amount_paid}</td>
-				<td>${fee.status}</td>
-				<td>${new Date(fee.created_at).toLocaleDateString()}</td>
-			</tr>
-		`;
-		table.innerHTML += row;
-	});
-}
-
-loadLatestFee();
-loadUnpaidFees();
-loadHistory();
+  loadLatestFee();
+  loadUnpaidFees();
+  loadHistory();
 </script>
 
 {% endblock %}

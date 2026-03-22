@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}New Complaint | HMS{% endblock %}
+{% block title %}Apply Leave | HMS{% endblock %}
 {% block content %}
 
 <style>
@@ -21,10 +21,7 @@
     margin-bottom: 6px;
   }
 
-  .form-header p {
-    font-size: 13px;
-    color: #475569;
-  }
+  .form-header p { font-size: 13px; color: #475569; }
 
   .card {
     background: #101828;
@@ -34,22 +31,19 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   }
 
-  .field {
-    margin-bottom: 18px;
-  }
+  .field { margin-bottom: 16px; }
 
   .field label {
     display: block;
     font-size: 12.5px;
     font-weight: 500;
     color: #94a3b8;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
     letter-spacing: 0.02em;
   }
 
   .field input,
-  .field textarea,
-  .field select {
+  .field textarea {
     width: 100%;
     background: #0c1220;
     color: #e2e8f0;
@@ -64,10 +58,21 @@
   }
 
   .field input:focus,
-  .field textarea:focus,
-  .field select:focus {
+  .field textarea:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+
+  /* date picker icon color fix */
+  .field input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
+    cursor: pointer;
+  }
+
+  .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
   .btn-submit {
@@ -124,46 +129,48 @@
 </style>
 
 <div class="form-wrap">
-  <a href="/complaints/" class="back-link">← Back to Complaints</a>
+  <a href="/leaves/all/" class="back-link">← Back to Leaves</a>
 
   <div class="form-header">
-    <h2>📋 Raise a Complaint</h2>
-    <p>Describe your issue clearly so it gets resolved faster</p>
+    <h2>📅 Apply for Leave</h2>
+    <p>Fill in the details for your leave request</p>
   </div>
 
   <div class="card">
-    <div class="alert-error" id="errorBox"></div>
+    <div class="alert-error"  id="errorBox"></div>
     <div class="alert-success" id="successBox"></div>
 
-    <form id="complaintForm">
+    <form id="leaveForm">
       {% csrf_token %}
 
       <div class="field">
-        <label>Title</label>
-        <input type="text" id="title" placeholder="e.g. Water leakage in room 204" required />
+        <label>Reason</label>
+        <textarea id="reason" rows="3" placeholder="Reason for leave..." required></textarea>
       </div>
 
       <div class="field">
-        <label>Description</label>
-        <textarea id="description" rows="4" placeholder="Describe your issue in detail..." required></textarea>
+        <label>Place on Leave</label>
+        <input type="text" id="place_on_leave" placeholder="e.g. Mumbai, Home" required />
       </div>
 
-      <div class="field">
-        <label>Priority Level</label>
-        <select id="attention_level">
-          <option value="M">Medium</option>
-          <option value="H">High</option>
-          <option value="I">Immediate</option>
-        </select>
+      <div class="date-row">
+        <div class="field">
+          <label>Date of Leave</label>
+          <input type="date" id="date_to_leave" required />
+        </div>
+        <div class="field">
+          <label>Date of Return</label>
+          <input type="date" id="date_of_return" required />
+        </div>
       </div>
 
-      <button type="submit" class="btn-submit">Submit Complaint →</button>
+      <button type="submit" class="btn-submit">Submit Request →</button>
     </form>
   </div>
 </div>
 
 <script>
-  document.getElementById("complaintForm").addEventListener("submit", function(e) {
+  document.getElementById("leaveForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
     const errorBox   = document.getElementById("errorBox");
@@ -172,12 +179,13 @@
     successBox.style.display = "none";
 
     const data = {
-      title:           document.getElementById("title").value,
-      description:     document.getElementById("description").value,
-      attention_level: document.getElementById("attention_level").value
+      reason:         document.getElementById("reason").value,
+      place_on_leave: document.getElementById("place_on_leave").value,
+      date_to_leave:  document.getElementById("date_to_leave").value,
+      date_of_return: document.getElementById("date_of_return").value,
     };
 
-    fetch("/complaints/create-api/", {
+    fetch("/leaves/create/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -192,8 +200,8 @@
         errorBox.textContent = Object.values(data.errors).flat().join(", ");
       } else {
         successBox.style.display = "block";
-        successBox.textContent = "✅ Complaint submitted successfully!";
-        document.getElementById("complaintForm").reset();
+        successBox.textContent = "✅ Leave request submitted successfully!";
+        document.getElementById("leaveForm").reset();
       }
     })
     .catch(() => {

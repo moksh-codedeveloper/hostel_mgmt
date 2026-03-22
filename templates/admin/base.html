@@ -1,91 +1,314 @@
-{% extends "admin/base.html" %}
-
-{% block title %}Hostel Admin{% endblock %}
-
-{% block branding %}
-<h1 id="site-name" style="margin:0;">
-    🏨 Hostel Admin Panel
-</h1>
-{% endblock %}
-
-{% block extrastyle %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{% block title %}Hostel Management System{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg-base:       #070c16;
+    --bg-surface:    #0c1220;
+    --bg-card:       #101828;
+    --bg-elevated:   #162030;
+    --border:        #1c2d42;
+    --accent:        #3b82f6;
+    --accent-soft:   rgba(59,130,246,0.12);
+    --accent-glow:   rgba(59,130,246,0.2);
+    --success:       #10b981;
+    --danger:        #ef4444;
+    --text-primary:  #e2e8f0;
+    --text-secondary:#94a3b8;
+    --text-muted:    #475569;
+  }
 
-/* ===== GLOBAL RESET ===== */
-body {
-    background-color: #f4f6f9;
-    font-family: "Segoe UI", sans-serif;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ===== HEADER ===== */
-#header {
-    background: #111827;
-    color: #fff;
-    padding: 15px 20px;
-}
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: radial-gradient(ellipse 80% 40% at 50% -5%, rgba(59,130,246,0.07) 0%, transparent 60%);
+  }
 
-/* ===== CONTENT ===== */
-#content {
-    padding: 25px !important;
-}
+  /* HEADER */
+  header {
+    height: 60px;
+    background: rgba(10,16,28,0.97);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
 
-/* ===== BREADCRUMBS ===== */
-div.breadcrumbs {
-    background: none;
-    padding: 10px 0;
-    color: #6b7280;
-}
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-/* ===== MODULE CARDS ===== */
-.module {
-    background: #fff;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    padding: 12px;
-    margin-bottom: 15px;
-}
+  .logo-box {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 16px rgba(59,130,246,0.35);
+  }
 
-/* ===== TABLE ===== */
-.results {
+  .brand-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--success);
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  /* NAV */
+  nav {
+    height: 46px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-left { display: flex; align-items: center; gap: 2px; }
+
+  .nav-left a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .nav-left a:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 4px 12px 4px 6px;
+    border-radius: 99px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+
+  .user-avatar {
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: white;
+    font-weight: 600;
+  }
+
+  .btn-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 5px 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .btn-logout:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: rgba(239,68,68,0.07);
+  }
+
+  /* MAIN */
+  main { flex: 1; padding: 28px; }
+  .container { max-width: 1180px; margin: 0 auto; }
+
+  /* DJANGO ADMIN OVERRIDES */
+  #content, #content-main { background: var(--bg-base); color: var(--text-primary); }
+
+  .module {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
-}
+  }
 
-.results th {
-    background: #f3f4f6;
-    font-weight: 600;
-}
+  .module h2, .module caption {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+  }
 
-.results td {
-    padding: 12px;
-}
+  .results { background: var(--bg-card); }
 
-/* ===== HOVER EFFECT ===== */
-.results tr:hover {
-    background: #f9fafb;
-}
+  .results th {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+  }
 
-/* ===== BUTTON ===== */
-.button, input[type=submit] {
-    background: #2563eb;
-    border-radius: 6px;
-    border: none;
-}
+  .results td {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 13.5px;
+  }
 
-.button:hover {
-    background: #1d4ed8;
-}
+  .results tr:hover td { background: var(--bg-elevated); }
+  .results tr:last-child td { border-bottom: none; }
 
-/* ===== INPUT ===== */
-input, select, textarea {
-    border-radius: 6px;
-    padding: 8px;
-}
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: #93c5fd; }
 
-/* ===== CLEAN SIDEBAR ===== */
-#content-main .app {
-    margin-bottom: 20px;
-}
+  .app, #content-related {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
 
+  input, select, textarea {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    margin-top: 4px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  div.breadcrumbs {
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 28px;
+    font-size: 12.5px;
+  }
+
+  div.breadcrumbs a { color: var(--text-secondary); }
+  div.breadcrumbs a:hover { color: var(--accent); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 16px 28px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    background: var(--bg-surface);
+    letter-spacing: 0.02em;
+  }
+
+  footer strong { color: var(--accent); font-weight: 500; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg-base); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 </style>
-{% endblock %}
+{% block extrahead %}{% endblock %}
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="logo-box">🏨</div>
+    <div>
+      <div class="brand-name">Hostel Management</div>
+      <div class="brand-sub">System</div>
+    </div>
+  </div>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    System Online
+  </div>
+</header>
+
+<main>
+  <div class="container">{% block content %}{% endblock %}</div>
+</main>
+
+<footer>© 2025 <strong>Hostel Management System</strong> — All rights reserved</footer>
+
+</body>
+</html>

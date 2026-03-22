@@ -1,4 +1,4 @@
-from .views import register, student_profile, user_login, register_user, user_logout, update_student, update_user
+from .views import dashboard, register, student_profile, user_login, register_user, user_logout, update_student, update_user
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
@@ -13,5 +13,6 @@ urlpatterns = [
     path("student/", student_profile, name="student_profile"),
     path("logout/", user_logout, name="user_logout"),
     path("student/update/", update_student, name="student_update"),
-    path("user/update/", update_user, name="user_update")
+    path("user/update/", update_user, name="user_update"),
+    path("dashboard/", dashboard, name="dashboard")
 ]
