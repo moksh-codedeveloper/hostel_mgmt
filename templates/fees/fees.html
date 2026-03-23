@@ -15,10 +15,7 @@
     margin-bottom: 4px;
   }
 
-  .fees-header p {
-    font-size: 13px;
-    color: #475569;
-  }
+  .fees-header p { font-size: 13px; color: #475569; }
 
   .card {
     background: #101828;
@@ -41,10 +38,9 @@
     border-bottom: 1px solid #1c2d42;
   }
 
-  /* LATEST FEE */
   .fee-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 14px;
   }
 
@@ -70,7 +66,6 @@
     color: #e2e8f0;
   }
 
-  /* STATUS BADGE */
   .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -81,19 +76,9 @@
     text-transform: uppercase;
   }
 
-  .badge-paid {
-    background: rgba(16,185,129,0.12);
-    border: 1px solid rgba(16,185,129,0.3);
-    color: #10b981;
-  }
+  .badge-paid   { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #10b981; }
+  .badge-unpaid { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #ef4444; }
 
-  .badge-unpaid {
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.3);
-    color: #ef4444;
-  }
-
-  /* TABLE */
   .fee-table {
     width: 100%;
     border-collapse: collapse;
@@ -115,14 +100,27 @@
     padding: 11px 12px;
     color: #e2e8f0;
     border-bottom: 1px solid #1c2d42;
+    vertical-align: middle;
   }
 
-  .fee-table tr:last-child td {
-    border-bottom: none;
+  .fee-table tr:last-child td { border-bottom: none; }
+  .fee-table tr:hover td { background: #162030; }
+
+  .btn-receipt {
+    background: transparent;
+    border: 1px solid #1c2d42;
+    color: #475569;
+    padding: 4px 11px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
   }
 
-  .fee-table tr:hover td {
-    background: #162030;
+  .btn-receipt:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
   }
 
   .empty-state {
@@ -132,16 +130,155 @@
     font-size: 13px;
   }
 
-  .empty-state span {
-    display: block;
-    font-size: 26px;
-    margin-bottom: 8px;
+  .empty-state span { display: block; font-size: 26px; margin-bottom: 8px; }
+  .loading { color: #475569; font-size: 13px; padding: 12px 0; }
+
+  /* RECEIPT MODAL */
+  .receipt-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
   }
 
-  .loading {
-    color: #475569;
+  .receipt-overlay.open { display: flex; }
+
+  .receipt-box {
+    background: #fff;
+    color: #111;
+    width: 460px;
+    border-radius: 12px;
+    padding: 32px 28px;
+    position: relative;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .receipt-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #9ca3af;
+  }
+
+  .receipt-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .r-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+  }
+
+  .r-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #111;
+  }
+
+  .r-sub { font-size: 11px; color: #9ca3af; }
+
+  .receipt-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 3px;
+  }
+
+  .receipt-id { font-size: 12px; color: #9ca3af; margin-bottom: 16px; }
+
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
     font-size: 13px;
-    padding: 12px 0;
+  }
+
+  .receipt-row:last-of-type { border-bottom: none; }
+  .r-key { color: #6b7280; }
+  .r-val { font-weight: 600; color: #111; }
+
+  .receipt-total {
+    margin-top: 14px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rt-label { font-size: 13px; color: #1d4ed8; font-weight: 600; }
+  .rt-amount { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #1d4ed8; }
+
+  .receipt-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .btn-print {
+    flex: 1;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-print:hover { opacity: 0.88; }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    .receipt-box, .receipt-box * { visibility: visible; }
+    .receipt-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: none;
+      border-radius: 0;
+      width: 100%;
+      max-width: 480px;
+    }
+    .receipt-close, .receipt-actions { display: none !important; }
   }
 </style>
 
@@ -159,9 +296,10 @@
 <!-- Unpaid Fees -->
 <div class="card">
   <h3>Unpaid Fees</h3>
-  <table class="fee-table">
+  <table class="fee-table" id="unpaid-table">
     <thead>
       <tr>
+        <th>Semester</th>
         <th>Total</th>
         <th>Paid</th>
         <th>Status</th>
@@ -177,13 +315,15 @@
 <!-- Fee History -->
 <div class="card">
   <h3>Fee History</h3>
-  <table class="fee-table">
+  <table class="fee-table" id="history-table">
     <thead>
       <tr>
+        <th>Semester</th>
         <th>Total</th>
         <th>Paid</th>
         <th>Status</th>
         <th>Date</th>
+        <th>Receipt</th>
       </tr>
     </thead>
     <tbody id="history-body"></tbody>
@@ -193,7 +333,38 @@
   </div>
 </div>
 
+<!-- Receipt Modal -->
+<div class="receipt-overlay" id="receiptOverlay">
+  <div class="receipt-box">
+    <button class="receipt-close" onclick="closeReceipt()">✕</button>
+    <div class="receipt-logo">
+      <div class="r-icon">🏨</div>
+      <div>
+        <div class="r-name">Hostel Management System</div>
+        <div class="r-sub">Official Fee Receipt</div>
+      </div>
+    </div>
+    <div class="receipt-title">Fee Receipt</div>
+    <div class="receipt-id" id="r-id"></div>
+    <div class="receipt-row"><span class="r-key">Student</span><span class="r-val" id="r-name"></span></div>
+    <div class="receipt-row"><span class="r-key">Semester</span><span class="r-val" id="r-sem"></span></div>
+    <div class="receipt-row"><span class="r-key">Date</span><span class="r-val" id="r-date"></span></div>
+    <div class="receipt-row"><span class="r-key">Amount Paid</span><span class="r-val" id="r-paid"></span></div>
+    <div class="receipt-row"><span class="r-key">Status</span><span class="r-val" id="r-status"></span></div>
+    <div class="receipt-total">
+      <span class="rt-label">Total Fee</span>
+      <span class="rt-amount" id="r-total"></span>
+    </div>
+    <div class="receipt-actions">
+      <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <button class="btn-cancel" onclick="closeReceipt()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  const studentName = "{{ request.user.get_full_name|default:request.user.username }}";
+
   function statusBadge(status) {
     if (status === "P") return `<span class="badge badge-paid">Paid</span>`;
     return `<span class="badge badge-unpaid">Unpaid</span>`;
@@ -211,6 +382,10 @@
     el.innerHTML = `
       <div class="fee-stats">
         <div class="stat-box">
+          <div class="stat-label">Semester</div>
+          <div class="stat-value">Sem ${fee.semester}</div>
+        </div>
+        <div class="stat-box">
           <div class="stat-label">Total Amount</div>
           <div class="stat-value">₹${fee.total_amount}</div>
         </div>
@@ -222,50 +397,77 @@
           <div class="stat-label">Status</div>
           <div class="stat-value" style="font-size:14px; padding-top:4px;">${statusBadge(fee.status)}</div>
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
   async function loadUnpaidFees() {
     const tbody = document.getElementById("unpaid-body");
     const empty = document.getElementById("unpaid-empty");
+    const table = document.getElementById("unpaid-table");
     const res = await fetch("/fees/status/?status=UP");
     const data = await res.json();
     if (!data.fees || data.fees.length === 0) {
+      table.style.display = "none";
       empty.style.display = "block";
       return;
     }
     data.fees.forEach(fee => {
       tbody.innerHTML += `
         <tr>
+          <td>Sem ${fee.semester ?? "—"}</td>
           <td>₹${fee.total_amount}</td>
           <td>₹${fee.amount_paid}</td>
           <td>${statusBadge(fee.status)}</td>
-        </tr>
-      `;
+        </tr>`;
     });
   }
 
   async function loadHistory() {
     const tbody = document.getElementById("history-body");
     const empty = document.getElementById("history-empty");
+    const table = document.getElementById("history-table");
     const res = await fetch("/fees/history/");
     const data = await res.json();
     if (!data.fees || data.fees.length === 0) {
+      table.style.display = "none";
       empty.style.display = "block";
       return;
     }
     data.fees.forEach(fee => {
       tbody.innerHTML += `
         <tr>
+          <td>Sem ${fee.semester}</td>
           <td>₹${fee.total_amount}</td>
           <td>₹${fee.amount_paid}</td>
           <td>${statusBadge(fee.status)}</td>
-          <td>${new Date(fee.created_at).toLocaleDateString("en-IN")}</td>
-        </tr>
-      `;
+          <td style="color:#94a3b8;">${fee.created_at}</td>
+          <td>
+            <button class="btn-receipt" onclick='openReceipt(${JSON.stringify(fee)})'>
+              🧾 Receipt
+            </button>
+          </td>
+        </tr>`;
     });
   }
+
+  function openReceipt(fee) {
+    document.getElementById("r-id").textContent     = `Receipt #${fee.id}`;
+    document.getElementById("r-name").textContent   = studentName;
+    document.getElementById("r-sem").textContent    = `Semester ${fee.semester}`;
+    document.getElementById("r-date").textContent   = fee.created_at;
+    document.getElementById("r-paid").textContent   = `₹${fee.amount_paid}`;
+    document.getElementById("r-total").textContent  = `₹${fee.total_amount}`;
+    document.getElementById("r-status").textContent = fee.status === "P" ? "✅ Paid" : "❌ Unpaid";
+    document.getElementById("receiptOverlay").classList.add("open");
+  }
+
+  function closeReceipt() {
+    document.getElementById("receiptOverlay").classList.remove("open");
+  }
+
+  document.getElementById("receiptOverlay").addEventListener("click", function(e) {
+    if (e.target === this) closeReceipt();
+  });
 
   loadLatestFee();
   loadUnpaidFees();
