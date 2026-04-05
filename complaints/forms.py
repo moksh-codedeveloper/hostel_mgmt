@@ -7,7 +7,6 @@ class ComplaintForm(forms.ModelForm):
         fields = [
             "title",
             "description",
-            "status",
             "attention_level"
         ]
 
